@@ -7,10 +7,11 @@ on:
     # 每天北京时间 08:00 自动检查
     # GitHub cron 使用 UTC
     # UTC 00:00 = 北京时间 08:00
-    - cron: "0 0 * * *"
+    - cron: "0 0 */5 * *"
 
 permissions:
   contents: read
+  actions: write
 
 jobs:
   renew:
@@ -76,3 +77,12 @@ jobs:
         run: |
           pkill -f sing-box || true
           rm -f sing-box sing-box-config.json sing-box.log || true
+
+      - name: Delete old workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        if: always()
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 0
+          keep_minimum_runs: 1
